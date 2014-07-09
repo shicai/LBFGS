@@ -1,4 +1,4 @@
 LBFGS
 =====
 
-CUDA LBFGS
+A Easy Used CUDA LBFGS Library
