@@ -13,8 +13,8 @@ static int progress(void        *instance,
                     int         niter,
                     int         ls)
 {
-    printf("[%4d]\tCost: %12.6f\tStep: %.4f\n", niter, cost, step);
-    return 0;
+	printf("[%s][%4d]\tCost: %12.6f\tStep: %.4f\n", __TIME__, niter, cost, step);
+	return 0;
 }
 
 // solve the problem: argmin f(x) = x^2 - 2*x + 5
@@ -36,20 +36,23 @@ float costfn(void           *config,        // configuration
 
 int main()
 {
-    lbfgs_parameter_t *opt_param;
-    cudaMallocManaged((void **) &opt_param, sizeof(lbfgs_parameter_t));
-    lbfgs_parameter_init(opt_param);
-    cudaDeviceSynchronize();
-    opt_param->max_iterations = 200;
+	lbfgs_parameter_t *opt_param = (lbfgs_parameter_t *) vecmalloc(sizeof(lbfgs_parameter_t));
+	lbfgs_parameter_init(opt_param);
+	cudaDeviceSynchronize();
+	opt_param->max_iterations = 200;
 
-    int     dim     = 1;
-    float   *theta  = (float *) vecmalloc(dim * sizeof(float));
-    float   *ps     = (float *) vecmalloc(sizeof(float));
-    float   cost    = 0.f;    
+	int     dim     = 1;
+	float   *ps     = (float *) vecalloc(sizeof(float));
+	float   *theta  = (float *) vecalloc(dim * sizeof(float));
+	float   cost;
 
-    theta[0] = 3.0f;
+	theta[0]    = -5.0f;    
 
-    int ret = lbfgs(dim, theta, &cost, costfn, progress, (void*)(ps), opt_param);
-    printf("L-BFGS optimization terminated with status code %d.\n", ret);
-    return 0;
+	printf("Solve argmin [x^2 - 2x + 5] from initial point %f.\n", *theta);
+	int ret = lbfgs(dim, theta, &cost, mycost, progress, (void*)(ps), opt_param);
+	printf("L-BFGS optimization terminated with status code %d.\n", ret);
+	cudaDeviceSynchronize();
+	printf("The optimized point is %f.\n", *theta);
+	system("pause");
+	return 0;
 }

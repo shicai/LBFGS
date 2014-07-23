@@ -10,11 +10,11 @@
 #ifndef __LBFGS_H__
 #define __LBFGS_H__
 
+#include "cudamath.h"
+
 #ifdef  __cplusplus
 extern "C" {
 #endif/*__cplusplus*/
-
-#include "generics.h"
 
 /*
  * The default precision of floating point values is 64bit (double).
@@ -28,6 +28,12 @@ extern "C" {
  */
 #ifndef LBFGS_IEEE_FLOAT
 #define LBFGS_IEEE_FLOAT    1
+#endif/*LBFGS_IEEE_FLOAT*/
+
+#if LBFGS_FLOAT == 32 && LBFGS_IEEE_FLOAT
+#define fsigndiff(x, y) (((*(unsigned int *)(x)) ^ (*(unsigned int *)(y))) & 0x80000000U)
+#else
+#define fsigndiff(x, y) (*(x) * (*(y) / fabs(*(y))) < 0.)
 #endif/*LBFGS_IEEE_FLOAT*/
 
 /**
