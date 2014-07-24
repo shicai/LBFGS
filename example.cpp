@@ -1,5 +1,4 @@
 #include "lbfgs.h"
-#include "arith.h"
 
 // printing the optimization process
 static int progress(void        *instance,
@@ -49,7 +48,7 @@ int main()
 	theta[0]    = -5.0f;    
 
 	printf("Solve argmin [x^2 - 2x + 5] from initial point %f.\n", *theta);
-	int ret = lbfgs(dim, theta, &cost, mycost, progress, (void*)(ps), opt_param);
+	int ret = lbfgs(dim, theta, &cost, costfn, progress, (void*)(ps), opt_param);
 	printf("L-BFGS optimization terminated with status code %d.\n", ret);
 	cudaDeviceSynchronize();
 	printf("The optimized point is %f.\n", *theta);
